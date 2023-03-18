@@ -75,19 +75,20 @@ def actions(x,y,t,ct,tc):
     return xr,yr,t+ct,c2g,c2c
 
 ctc_node=0  # cost to come for start node
+ctc_goal=math.dist((start_x,start_y),(goal_x,goal_y))
 parent_node_index=None # Index for the parent node
 node_index=0 # Index of the current node
 closed_list={} # list to store information about the current node
 check_closed_list={}
 open_list=PriorityQueue() # list the store nodes and pop them according to priority
-info=[ctc_node,node_index,parent_node_index,robot_start_position] # list to save all info of a node
+info=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position] # list to save all info of a node
 open_list.put(info)
 
 global_dict={}
-global_dict[robot_start_position]=[ctc_node,node_index,parent_node_index,robot_start_position]
+global_dict[robot_start_position]=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position]
 
 
-def new_node(ctc_move,new_pos):
+def new_node(ctc_total,ctc,ctc_g,new_pos):
 
     if screen.get_at(new_pos) == white and not (new_pos in check_closed_list):
         if not (new_pos in global_dict):
@@ -102,6 +103,112 @@ def new_node(ctc_move,new_pos):
                 global_dict[new_pos][2]=info[1]
                 global_dict[new_pos][0]=ctc_move+info[0]
 
+while True:
+    # if the open list is empty means that no solution could be found
+    if(open_list.empty()):
+        print("No solution")
+        goal_node=None
+        break
+
+    info=open_list.get()
+
+    # if the goal positoin is reached 
+    if(info[5]==robot_goal_position):
+        print("goalt reached")
+        closed_list[info[3]]=[info[0],info[1],info[2],info[4],info[5]]
+        goal_node=info[3]
+        break
+
+    new_nodes=move_robot()
+    for i in range(0,5):
+         if(new_nodes[i][3]==robot_goal_position):
+              print("goal reached")
+              closed_list[node_index+i+1]=
+
+
+
+
+
+
+    # # making the node for the new postion and adding to priority queue
+    # ctc_move,new_pos=robot.robot_move_left(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)             
+
+    # # making the node for the new postion and adding to priority queue
+    # ctc_move,new_pos=robot.robot_move_up(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+    # # making the node for the new postion and adding to priority queue                        
+    # ctc_move,new_pos=robot.robot_move_right(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+                            
+    # # making the node for the new postion and adding to priority queue  
+    # ctc_move,new_pos=robot.robot_move_down(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+    # # making the node for the new postion and adding to priority queue
+    # ctc_move,new_pos=robot.robot_move_down_left(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+    # # making the node for the new postion and adding to priority queue
+    # ctc_move,new_pos=robot.robot_move_down_right(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+    # # making the node for the new postion and adding to priority queue
+    # ctc_move,new_pos=robot.robot_move_up_left(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+    # # making the node for the new postion and adding to priority queue
+    # ctc_move,new_pos=robot.robot_move_up_right(info[3])
+    # if(new_pos==robot_goal_position):
+    #     print("goal reached")
+    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
+    #     goal_node=node_index+1
+    #     break
+    # new_node(ctc_move,new_pos)
+                            
+    # append the node to node list                                               
+    closed_list[info[1]]=[info[0],info[2],info[3]]
+    check_closed_list[info[3]]=None
+
+    # print(f"Closed_list{info[1]}]",closed_list[info[1]])
+    # screen.set_at(info[3], b
 
 
 
