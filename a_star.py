@@ -49,15 +49,19 @@ while True:
         step_size=int(input("Enter the step size \n"))
         start_theta=int(input("Enter the start \n"))
         goal_theta=int(input("Enter the goal \n"))
-        robot_start_position=(start_x,250-start_y,start_theta)
-        robot_goal_position=(goal_x,250-goal_y,goal_theta)
+        robot_start_position=(start_x,250-start_y)
+        robot_goal_position=(goal_x,250-goal_y)
         if screen.get_at(robot_start_position) != white and screen.get_at(robot_goal_position)!=white:
             raise ValueError
         break
     except ValueError:
         print("Wrong input entered. Please enter an integer in correct range x(0,599) and y(0,249).")
 
-def move_robot(x,y,curr_theta,totalcst):
+robot_start_position=(start_x,250-start_y,start_theta)
+robot_goal_position=(goal_x,250-goal_y,goal_theta)
+
+def move_robot(robot,totalcst):
+    x,y,curr_theta=robot
     new_nodes = []
     for t in range(-60,61,30):
         x_t,y_t, t_t, c2g, c2c=  actions(x,y,t,curr_theta,totalcst)
@@ -69,7 +73,7 @@ def euclidean(x,y,xg,yg):
     return math.dist((x,y),(xg,yg))
 
 def actions(x,y,t,ct,tc):
-    xr,yr=(x+step_size*np.cos(t+ct),y+step_size*np.sin(t+ct))
+    xr,yr=(round(x+step_size*np.cos(np.deg2rad(t+ct))),round(y+step_size*np.sin(np.deg2rad(t+ct))))
     c2g = euclidean(xr,yr,goal_x,goal_y)
     c2c = tc - c2g
     return xr,yr,t+ct,c2g,c2c
@@ -88,22 +92,31 @@ global_dict={}
 global_dict[robot_start_position]=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position]
 
 
-def new_node(ctc_total,ctc,ctc_g,new_pos):
-
-    if screen.get_at(new_pos) == white and not (new_pos in check_closed_list):
+def new_node(new_node_list):
+    total_cost=new_node_list[0]
+    cost_to_come=new_node_list[1]
+    cost_to_goal=new_node_list[2]
+    new_pos=new_node_list[3]
+    print(info[1])
+    x,y,t=new_pos  #### change this afterwards
+    if screen.get_at((x,y)) == white and not (new_pos in check_closed_list):
         if not (new_pos in global_dict):
-            ctc_node_left = ctc_move + info[0]
+            ctc_new_node = cost_to_come + info[1]
+            total_cost=cost_to_goal+ctc_new_node
             
             global node_index
             node_index += 1
-            global_dict[new_pos]=[ctc_node_left, node_index, info[1], new_pos]
+            global_dict[new_pos]=[total_cost,ctc_new_node,cost_to_goal,node_index,info[3],new_pos]
             open_list.put(global_dict[new_pos])
         else:
-            if (global_dict[new_pos][0]>ctc_move+info[0]):
-                global_dict[new_pos][2]=info[1]
-                global_dict[new_pos][0]=ctc_move+info[0]
+            if (global_dict[new_pos][1]>cost_to_come+info[1]):
+                ctc_new_node = cost_to_come + info[1]
+                global_dict[new_pos][4]=info[3]
+                global_dict[new_pos][1]=ctc_new_node
+                global_dict[new_pos][0]=cost_to_goal+ctc_new_node
 
-while True:
+end_loop=0
+while True and end_loop!=1:
     # if the open list is empty means that no solution could be found
     if(open_list.empty()):
         print("No solution")
@@ -112,131 +125,27 @@ while True:
 
     info=open_list.get()
 
-    # if the goal positoin is reached 
-    if(info[5]==robot_goal_position):
-        print("goalt reached")
-        closed_list[info[3]]=[info[0],info[1],info[2],info[4],info[5]]
-        goal_node=info[3]
-        break
-
-    new_nodes=move_robot()
+    new_nodes=move_robot(info[5],info[0])
     for i in range(0,5):
-         if(new_nodes[i][3]==robot_goal_position):
-              print("goal reached")
-              closed_list[node_index+i+1]=
+        if(new_nodes[i][2]<=1.5):
+            print("goal reached")
+            closed_list[node_index+i+1]=[new_nodes[i][0]+info[i][1],new_nodes[i][1]+info[i][1],new_nodes[i][2],info[3],new_nodes[i][3]]
+            goal_node=node_index+i+1
+            end_loop=1
+            break # make if break out of while loop
 
-
-
-
-
-
-    # # making the node for the new postion and adding to priority queue
-    # ctc_move,new_pos=robot.robot_move_left(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)             
-
-    # # making the node for the new postion and adding to priority queue
-    # ctc_move,new_pos=robot.robot_move_up(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
-                            
-    # # making the node for the new postion and adding to priority queue                        
-    # ctc_move,new_pos=robot.robot_move_right(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
-                            
-                            
-    # # making the node for the new postion and adding to priority queue  
-    # ctc_move,new_pos=robot.robot_move_down(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
-                            
-    # # making the node for the new postion and adding to priority queue
-    # ctc_move,new_pos=robot.robot_move_down_left(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
-                            
-    # # making the node for the new postion and adding to priority queue
-    # ctc_move,new_pos=robot.robot_move_down_right(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
-                            
-    # # making the node for the new postion and adding to priority queue
-    # ctc_move,new_pos=robot.robot_move_up_left(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
-                            
-    # # making the node for the new postion and adding to priority queue
-    # ctc_move,new_pos=robot.robot_move_up_right(info[3])
-    # if(new_pos==robot_goal_position):
-    #     print("goal reached")
-    #     closed_list[node_index+1]=[ctc_move+info[0],info[2],new_pos]
-    #     goal_node=node_index+1
-    #     break
-    # new_node(ctc_move,new_pos)
+        new_node(new_nodes[i])
+         
                             
     # append the node to node list                                               
-    closed_list[info[1]]=[info[0],info[2],info[3]]
-    check_closed_list[info[3]]=None
+    closed_list[info[3]]=[info[0],info[1],info[2],info[4],info[5]]
+    print(closed_list[info[3]])
+    check_closed_list[info[5]]=None
+    p_1,p_2,th=info[5]
+    screen.set_at((p_1,p_2), (0,0,225))
+    pyg.display.update()
 
-    # print(f"Closed_list{info[1]}]",closed_list[info[1]])
-    # screen.set_at(info[3], b
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
 
 # Set the caption of the screen
 pyg.display.set_caption('Djikstra')
