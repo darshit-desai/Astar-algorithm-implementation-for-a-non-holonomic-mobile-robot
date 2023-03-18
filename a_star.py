@@ -43,9 +43,9 @@ white = (255,255,255)
 while True:
     try:
         start_x=int(input("Enter the starting x coordinate \n"))    
-        start_y=int(input("Enter the starting ycoordinate \n"))    
+        start_y=int(input("Enter the starting y coordinate \n"))    
         goal_x=int(input("Enter the goal coordinate \n"))    
-        goal_y=int(input("Enter the goal ycoordinate \n")) 
+        goal_y=int(input("Enter the goal y coordinate \n")) 
         step_size=int(input("Enter the step size \n"))
         start_theta=int(input("Enter the start \n"))
         goal_theta=int(input("Enter the goal \n"))
@@ -60,11 +60,11 @@ while True:
 robot_start_position=(start_x,250-start_y,start_theta)
 robot_goal_position=(goal_x,250-goal_y,goal_theta)
 
-def move_robot(robot,totalcst):
+def move_robot(robot,totalcst, costtocome):
     x,y,curr_theta=robot
     new_nodes = []
     for t in range(-60,61,30):
-        x_t,y_t, t_t, c2g, c2c=  actions(x,y,t,curr_theta,totalcst)
+        x_t,y_t, t_t, c2g, c2c=  actions(x,y,t,curr_theta,costtocome)
         robot_position=(x_t,y_t,t_t)
         new_nodes.append([c2g+c2c,c2c,c2g,robot_position])
     return new_nodes
@@ -72,10 +72,10 @@ def move_robot(robot,totalcst):
 def euclidean(x,y,xg,yg):
     return math.dist((x,y),(xg,yg))
 
-def actions(x,y,t,ct,tc):
+def actions(x,y,t,ct,c2c):
     xr,yr=(round(x+step_size*np.cos(np.deg2rad(t+ct))),round(y+step_size*np.sin(np.deg2rad(t+ct))))
     c2g = euclidean(xr,yr,goal_x,goal_y)
-    c2c = tc - c2g
+    c2c = c2c+step_size
     return xr,yr,t+ct,c2g,c2c
 
 ctc_node=0  # cost to come for start node
@@ -90,7 +90,7 @@ open_list.put(info)
 
 global_dict={}
 global_dict[robot_start_position]=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position]
-
+#fggfgf
 
 def new_node(new_node_list):
     total_cost=new_node_list[0]
@@ -99,21 +99,22 @@ def new_node(new_node_list):
     new_pos=new_node_list[3]
     print(info[1])
     x,y,t=new_pos  #### change this afterwards
-    if screen.get_at((x,y)) == white and not (new_pos in check_closed_list):
-        if not (new_pos in global_dict):
-            ctc_new_node = cost_to_come + info[1]
-            total_cost=cost_to_goal+ctc_new_node
-            
-            global node_index
-            node_index += 1
-            global_dict[new_pos]=[total_cost,ctc_new_node,cost_to_goal,node_index,info[3],new_pos]
-            open_list.put(global_dict[new_pos])
-        else:
-            if (global_dict[new_pos][1]>cost_to_come+info[1]):
-                ctc_new_node = cost_to_come + info[1]
-                global_dict[new_pos][4]=info[3]
-                global_dict[new_pos][1]=ctc_new_node
-                global_dict[new_pos][0]=cost_to_goal+ctc_new_node
+    if (((x>0 and x<600) and (y>0 and y<250))==True):
+        if screen.get_at((x,y)) == white and not (new_pos in check_closed_list):
+            if not (new_pos in global_dict):
+                ctc_new_node = cost_to_come
+                total_cost=cost_to_goal+ctc_new_node
+                
+                global node_index
+                node_index += 1
+                global_dict[new_pos]=[total_cost,ctc_new_node,cost_to_goal,node_index,info[3],new_pos]
+                open_list.put(global_dict[new_pos])
+            else:
+                if (global_dict[new_pos][1]>cost_to_come):
+                    ctc_new_node = cost_to_come
+                    global_dict[new_pos][4]=info[3]
+                    global_dict[new_pos][1]=ctc_new_node
+                    global_dict[new_pos][0]=cost_to_goal+ctc_new_node
 
 end_loop=0
 while True and end_loop!=1:
@@ -125,7 +126,7 @@ while True and end_loop!=1:
 
     info=open_list.get()
 
-    new_nodes=move_robot(info[5],info[0])
+    new_nodes=move_robot(info[5],info[0], info[1])
     for i in range(0,5):
         if(new_nodes[i][2]<=1.5):
             print("goal reached")

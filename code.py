@@ -37,6 +37,8 @@ pyg.draw.polygon(screen,(255,0,0),hexagon_dim)
 triangle_dim = [(460-radii-clr,25-((radii+clr)/np.tan(np.pi*13.28/180))),(460.00-radii-clr,225+((radii+clr)/np.tan(np.pi*13.28/180))),(510+((radii+clr)/np.cos(np.pi*26.5650518/180)),125)]
 # pyg.draw.polygon(screen,(255,0,0),triangle_dim)
 pyg.draw.polygon(screen,(255,0,0), triangle_dim)
+pyg.draw.aaline(screen,(0,0,0),(6,6),(90,90))
+
 # Set the caption of the screen
 pyg.display.set_caption('Djikstra')
 pyg.display.update()
