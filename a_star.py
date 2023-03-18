@@ -18,7 +18,7 @@ while (True):
 
 
 #Define the Surface Map
-screen = pyg.display.set_mode((600,250))
+screen = pyg.Surface((600, 250))
 #Define the rectangles which make the base map
 rect_color = (255, 255, 255)
 #Define the rectangle which makes the outer border
@@ -39,6 +39,27 @@ triangle_dim = [(460-radii-clr,25-((radii+clr)/np.tan(np.pi*13.28/180))),(460.00
 # pyg.draw.polygon(screen,(255,0,0),triangle_dim)
 pyg.draw.polygon(screen,(255,0,0), triangle_dim)
 white = (255,255,255)
+def bresenham_line(x0, y0, x1, y1):
+    dx = abs(x1 - x0)
+    dy = abs(y1 - y0)
+    sx = 1 if x0 < x1 else -1
+    sy = 1 if y0 < y1 else -1
+    err = dx - dy
+    
+    points = []
+    while x0 != x1 or y0 != y1:
+        points.append((x0, y0))
+        e2 = 2 * err
+        if e2 > -dy:
+            err -= dy
+            x0 += sx
+        if e2 < dx:
+            err += dx
+            y0 += sy
+    
+    points.append((x1, y1))
+    return points
+
 
 while True:
     try:
@@ -49,24 +70,28 @@ while True:
         step_size=int(input("Enter the step size \n"))
         start_theta=int(input("Enter the start \n"))
         goal_theta=int(input("Enter the goal \n"))
-        robot_start_position=(start_x,250-start_y)
-        robot_goal_position=(goal_x,250-goal_y)
+        start_y=250-start_y
+        goal_y=250-goal_y
+        robot_start_position=(start_x,start_y)
+        robot_goal_position=(goal_x,goal_y)
         if screen.get_at(robot_start_position) != white and screen.get_at(robot_goal_position)!=white:
             raise ValueError
         break
     except ValueError:
         print("Wrong input entered. Please enter an integer in correct range x(0,599) and y(0,249).")
 
-robot_start_position=(start_x,250-start_y,start_theta)
-robot_goal_position=(goal_x,250-goal_y,goal_theta)
+robot_start_position=(start_x,start_y)
+robot_goal_position=(goal_x,goal_y)
 
-def move_robot(robot,totalcst, costtocome):
-    x,y,curr_theta=robot
+def move_robot(robot,curr_theta, costtocome):
+    x,y=robot
     new_nodes = []
     for t in range(-60,61,30):
         x_t,y_t, t_t, c2g, c2c=  actions(x,y,t,curr_theta,costtocome)
-        robot_position=(x_t,y_t,t_t)
-        new_nodes.append([c2g+c2c,c2c,c2g,robot_position])
+        robot_position=(x_t,y_t)
+        points=bresenham_line(x,y,x_t,y_t)
+        
+        new_nodes.append([c2g+c2c,c2c,c2g,robot_position,t_t,points])
     return new_nodes
 
 def euclidean(x,y,xg,yg):
@@ -82,14 +107,14 @@ ctc_node=0  # cost to come for start node
 ctc_goal=math.dist((start_x,start_y),(goal_x,goal_y))
 parent_node_index=None # Index for the parent node
 node_index=0 # Index of the current node
-closed_list={} # list to store information about the current node
+closed_list={} # list to store information about the currentstart_y node
 check_closed_list={}
 open_list=PriorityQueue() # list the store nodes and pop them according to priority
-info=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position] # list to save all info of a node
+info=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position,start_theta] # list to save all info of a node
 open_list.put(info)
 
 global_dict={}
-global_dict[robot_start_position]=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position]
+global_dict[robot_start_position]=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position,start_theta]
 #fggfgf
 
 def new_node(new_node_list):
@@ -97,26 +122,25 @@ def new_node(new_node_list):
     cost_to_come=new_node_list[1]
     cost_to_goal=new_node_list[2]
     new_pos=new_node_list[3]
-    print(info[1])
-    x,y,t=new_pos  #### change this afterwards
+    t=new_node_list[4]
+    x,y=new_pos  #### change this afterwards
+    points=new_node_list[5]
     if (((x>0 and x<600) and (y>0 and y<250))==True):
-        if screen.get_at((x,y)) == white and not (new_pos in check_closed_list):
+        if ( not(any(screen.get_at((a,b))!=white for a,b in points)) and screen.get_at((x,y)) == white and not (new_pos in check_closed_list)):
             if not (new_pos in global_dict):
-                ctc_new_node = cost_to_come
-                total_cost=cost_to_goal+ctc_new_node
-                
                 global node_index
                 node_index += 1
-                global_dict[new_pos]=[total_cost,ctc_new_node,cost_to_goal,node_index,info[3],new_pos]
+                global_dict[new_pos]=[total_cost,cost_to_come,cost_to_goal,node_index,info[3],new_pos,t]
                 open_list.put(global_dict[new_pos])
             else:
                 if (global_dict[new_pos][1]>cost_to_come):
-                    ctc_new_node = cost_to_come
                     global_dict[new_pos][4]=info[3]
-                    global_dict[new_pos][1]=ctc_new_node
-                    global_dict[new_pos][0]=cost_to_goal+ctc_new_node
+                    global_dict[new_pos][1]=cost_to_come
+                    global_dict[new_pos][0]=total_cost
 
+start_time=time.time()
 end_loop=0
+
 while True and end_loop!=1:
     # if the open list is empty means that no solution could be found
     if(open_list.empty()):
@@ -126,11 +150,11 @@ while True and end_loop!=1:
 
     info=open_list.get()
 
-    new_nodes=move_robot(info[5],info[0], info[1])
+    new_nodes=move_robot(info[5],info[6],info[1])
     for i in range(0,5):
-        if(new_nodes[i][2]<=1.5):
+        if(new_nodes[i][2]<=0.5):
             print("goal reached")
-            closed_list[node_index+i+1]=[new_nodes[i][0]+info[i][1],new_nodes[i][1]+info[i][1],new_nodes[i][2],info[3],new_nodes[i][3]]
+            closed_list[node_index+i+1]=[new_nodes[i][0]+info[1],new_nodes[i][1]+info[1],new_nodes[i][2],info[3],new_nodes[i][3],new_nodes[i][4]]
             goal_node=node_index+i+1
             end_loop=1
             break # make if break out of while loop
@@ -139,14 +163,25 @@ while True and end_loop!=1:
          
                             
     # append the node to node list                                               
-    closed_list[info[3]]=[info[0],info[1],info[2],info[4],info[5]]
+    closed_list[info[3]]=[info[0],info[1],info[2],info[4],info[5],info[6]]
     print(closed_list[info[3]])
     check_closed_list[info[5]]=None
-    p_1,p_2,th=info[5]
-    screen.set_at((p_1,p_2), (0,0,225))
-    pyg.display.update()
-
     
+
+
+end_time=time.time()
+# print(closed_list)
+print("Total time taken",end_time-start_time)
+# Create a screen
+screen_display = pyg.display.set_mode((600, 250))
+
+# Display the surface on the screen
+screen_display.blit(screen, (0, 0))
+for values in closed_list.values():
+    p_1,p_2=values[4]
+    screen_display.set_at((p_1,p_2), (0,0,225))
+# Update the screen to show the changes
+    pyg.display.update()
 
 # Set the caption of the screen
 pyg.display.set_caption('Djikstra')
