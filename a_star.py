@@ -47,9 +47,10 @@ while True:
         goal_x=int(input("Enter the goal coordinate \n"))    
         goal_y=int(input("Enter the goal ycoordinate \n")) 
         step_size=int(input("Enter the step size \n"))
-        initial_theta=int(input("Enter the initial \n"))
-        robot_start_position=(start_x,250-start_y)
-        robot_goal_position=(goal_x,250-goal_y)
+        start_theta=int(input("Enter the start \n"))
+        goal_theta=int(input("Enter the goal \n"))
+        robot_start_position=(start_x,250-start_y,start_theta)
+        robot_goal_position=(goal_x,250-goal_y,goal_theta)
         if screen.get_at(robot_start_position) != white and screen.get_at(robot_goal_position)!=white:
             raise ValueError
         break
@@ -60,7 +61,8 @@ def move_robot(x,y,curr_theta,totalcst):
     new_nodes = []
     for t in range(-60,61,30):
         x_t,y_t, t_t, c2g, c2c=  actions(x,y,t,curr_theta,totalcst)
-        new_nodes.append([c2g+c2c,c2c,c2g,(x_t,y_t,t_t)])
+        robot_position=(x_t,y_t,t_t)
+        new_nodes.append([c2g+c2c,c2c,c2g,robot_position])
     return new_nodes
 
 def euclidean(x,y,xg,yg):
