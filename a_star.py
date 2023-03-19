@@ -154,7 +154,7 @@ while True and end_loop!=1:
     for i in range(0,5):
         if(new_nodes[i][2]<=0.5):
             print("goal reached")
-            closed_list[node_index+i+1]=[new_nodes[i][0]+info[1],new_nodes[i][1]+info[1],new_nodes[i][2],info[3],new_nodes[i][3],new_nodes[i][4]]
+            closed_list[node_index+i+1]=[new_nodes[i][0]+info[1],new_nodes[i][1]+info[1],new_nodes[i][2],info[4],new_nodes[i][3],new_nodes[i][4]]
             goal_node=node_index+i+1
             end_loop=1
             break # make if break out of while loop
@@ -168,7 +168,7 @@ while True and end_loop!=1:
     check_closed_list[info[5]]=None
     
 
-
+green=(0,255,0)
 end_time=time.time()
 # print(closed_list)
 print("Total time taken",end_time-start_time)
@@ -183,9 +183,34 @@ for values in closed_list.values():
 # Update the screen to show the changes
     pyg.display.update()
 
+# Find the path form start to goal
+path = []
+print("Closed list check path here",closed_list)
+if goal_node!=None:
+    print(goal_node)
+    while goal_node is not None:
+        goal_node_parent = closed_list[goal_node][3]
+        path.append(closed_list[goal_node][4])
+        # screen_display.set_at(closed_list[goal_node][4], green)
+        goal_node=goal_node_parent
+        
+        
+    # reverse the path list to get the correct order of nodes
+    path.reverse()
+    print("****** The optimum path is ****",path)
+
+for i in range(0,len(path)):
+    if(i+1>len(path)-1):
+        break
+    pyg.draw.line(screen_display,green,path[i],path[i+1],width=1)
+    pyg.display.update()
+    
+
+
 # Set the caption of the screen
 pyg.display.set_caption('Djikstra')
 pyg.display.update()
+pyg.time.wait(100000)
 running=True
 while running:
 	# for loop through the event queue
