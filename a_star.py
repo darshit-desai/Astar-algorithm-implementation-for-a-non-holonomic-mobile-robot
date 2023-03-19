@@ -116,6 +116,7 @@ open_list.put(info)
 global_dict={}
 global_dict[robot_start_position]=[ctc_goal+ctc_node,ctc_node,ctc_goal,node_index,parent_node_index,robot_start_position,start_theta]
 #fggfgf
+all_nodes = np.array([start_x,start_y,start_theta])
 
 def new_node(new_node_list):
     total_cost=new_node_list[0]
@@ -127,11 +128,15 @@ def new_node(new_node_list):
     points=new_node_list[5]
     if (((x>0 and x<600) and (y>0 and y<250))==True):
         if ( not(any(screen.get_at((a,b))!=white for a,b in points)) and screen.get_at((x,y)) == white and not (new_pos in check_closed_list)):
+            dist1 = np.square(all_nodes[:,:2]-new_pos)
+            distan_idx = np.argwhere(dist1[:,0]+dist1[:,1]<0.25)
+                        
             if not (new_pos in global_dict):
                 global node_index
                 node_index += 1
                 global_dict[new_pos]=[total_cost,cost_to_come,cost_to_goal,node_index,info[3],new_pos,t]
                 open_list.put(global_dict[new_pos])
+                dict_vector[info[5]].append(new_pos)
             else:
                 if (global_dict[new_pos][1]>cost_to_come):
                     global_dict[new_pos][4]=info[3]
@@ -140,7 +145,7 @@ def new_node(new_node_list):
 
 start_time=time.time()
 end_loop=0
-
+dict_vector = {}
 while True and end_loop!=1:
     # if the open list is empty means that no solution could be found
     if(open_list.empty()):
@@ -149,7 +154,7 @@ while True and end_loop!=1:
         break
 
     info=open_list.get()
-
+    dict_vector[info[5]]=[]
     new_nodes=move_robot(info[5],info[6],info[1])
     for i in range(0,5):
         if(new_nodes[i][2]<=0.5):
@@ -174,14 +179,9 @@ end_time=time.time()
 print("Total time taken",end_time-start_time)
 # Create a screen
 screen_display = pyg.display.set_mode((600, 250))
-
-# Display the surface on the screen
 screen_display.blit(screen, (0, 0))
-for values in closed_list.values():
-    p_1,p_2=values[4]
-    screen_display.set_at((p_1,p_2), (0,0,225))
-# Update the screen to show the changes
-    pyg.display.update()
+pyg.display.update()
+print("Graph",dict_vector)
 
 # Find the path form start to goal
 path = []
@@ -198,6 +198,19 @@ if goal_node!=None:
     # reverse the path list to get the correct order of nodes
     path.reverse()
     print("****** The optimum path is ****",path)
+# # Display the surface on the screen
+
+for key in dict_vector.keys():
+    for i in range (0,len(dict_vector[key])):
+        pyg.draw.aaline(screen_display,(0,0,0),key,dict_vector[key][i])
+        pyg.display.update()
+
+
+# for values in closed_list.values():
+#     p_1,p_2=values[4]
+#     screen_display.set_at((p_1,p_2), (0,0,225))
+# # Update the screen to show the changes
+#     pyg.display.update()
 
 for i in range(0,len(path)):
     if(i+1>len(path)-1):
@@ -206,7 +219,7 @@ for i in range(0,len(path)):
     pyg.display.update()
     
 
-
+print("GLOBAL DICTIONARY",global_dict)
 # Set the caption of the screen
 pyg.display.set_caption('Djikstra')
 pyg.display.update()
