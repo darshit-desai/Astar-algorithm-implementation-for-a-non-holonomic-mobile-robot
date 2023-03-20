@@ -40,9 +40,7 @@ Terminal inputs:
 ### Animation of the node exploration (black) and the path taken (green line) with the obstacle map (red):
 ![ezgif com-video-to-gif](https://user-images.githubusercontent.com/36150235/226222995-05983ea1-9c1d-43a7-8b39-09277a598147.gif)
 
-
-
-https://user-images.githubusercontent.com/36150235/226223193-edd06fc2-6b76-4917-8a37-a593d9463b6a.mp4
+![video]()
 
 
 
