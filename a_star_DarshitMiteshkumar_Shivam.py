@@ -5,7 +5,6 @@ import numpy as np
 from queue import PriorityQueue
 import math
 import time
-from matplotlib import pyplot as plt
 
 # Function to find the points between 2 points
 def bresenham_line(x0, y0, x1, y1):
