@@ -239,7 +239,7 @@ for i in range(0,len(path)):
 
 
 # Set the caption of the screen
-pyg.display.set_caption('Djikstra')
+pyg.display.set_caption('A* Visualization Map')
 pyg.display.update()
 pyg.time.wait(1)
 running=True
