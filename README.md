@@ -1,8 +1,8 @@
 # Astar-algorithm-implementation-for-a-non-holonomic-mobile-robot
 *Project 3 Phase 1 ENPM661 Path Planning for Autonomous Robots*
 ## Authors
-- [Darshit Desai](https://github.com/darshit-desai)
-- [Shivam Sehgal](https://github.com/shivamsehgal77)
+- [Darshit Desai](https://github.com/darshit-desai) Dir ID: darshit; UID: 118551722
+- [Shivam Sehgal](https://github.com/shivamsehgal77) Dir ID: ssehgal7; UID: 119222041
 
 ## Code run Instructions
 
