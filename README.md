@@ -42,6 +42,10 @@ Terminal inputs:
 
 
 
+https://user-images.githubusercontent.com/36150235/226223193-edd06fc2-6b76-4917-8a37-a593d9463b6a.mp4
+
+
+
 
 
 
