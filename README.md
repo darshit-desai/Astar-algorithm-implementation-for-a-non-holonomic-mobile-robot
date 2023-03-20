@@ -1,5 +1,5 @@
 # Astar-algorithm-implementation-for-a-non-holonomic-mobile-robot
-
+*Project 3 Phase 1 ENPM661 Path Planning for Autonomous Robots*
 ## Authors
 - [Darshit Desai](https://github.com/darshit-desai)
 - [Shivam Sehgal](https://github.com/shivamsehgal77)
@@ -13,6 +13,11 @@ Download the code using https://github.com/darshit-desai/Astar-algorithm-impleme
 For running the code use /bin/python3 $PATH$ a_star_DarshitMiteshkumar_Shivam.py in the linux or VSCode Terminal
 
 ## Results
+
+
+### Google Drive Links: 
+![Video of valid solution](https://drive.google.com/file/d/1VzLooit4g6QmN3XYUQIhVg_RVxbSUGc-/view?usp=sharing),![Video with no solution]( 
+https://drive.google.com/file/d/1cQPtLVFklBLRYghyRPMaL3PqzhV6EsEY/view?usp=sharing)
 
 ### Here's a screenshot of the explored node vectors (black) and the path taken (green line) with the obstacle map (red):
 
@@ -39,9 +44,6 @@ Terminal inputs:
 
 ### Animation of the node exploration (black) and the path taken (green line) with the obstacle map (red):
 ![ezgif com-video-to-gif](https://user-images.githubusercontent.com/36150235/226222995-05983ea1-9c1d-43a7-8b39-09277a598147.gif)
-
-Google Drive Links: ![Video of valid solution](https://drive.google.com/file/d/1VzLooit4g6QmN3XYUQIhVg_RVxbSUGc-/view?usp=sharing),![Video with no solution]( 
-https://drive.google.com/file/d/1cQPtLVFklBLRYghyRPMaL3PqzhV6EsEY/view?usp=sharing)
 
 
 
