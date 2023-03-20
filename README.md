@@ -37,11 +37,8 @@ Terminal inputs:
     Enter the goal theta orientation: 30
 ![image](https://user-images.githubusercontent.com/36150235/226221895-8a29293c-3d1f-45f7-80d0-6db00250d0f7.png)
 
-
-https://user-images.githubusercontent.com/36150235/226222625-f10fdf41-e990-44ae-8988-87dcfdb284b9.mp4
-
-
 ### Animation of the node exploration (black) and the path taken (green line) with the obstacle map (red):
+![ezgif com-video-to-gif](https://user-images.githubusercontent.com/36150235/226222995-05983ea1-9c1d-43a7-8b39-09277a598147.gif)
 
 
 
