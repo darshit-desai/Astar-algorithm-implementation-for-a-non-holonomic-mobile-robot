@@ -35,8 +35,8 @@ Terminal inputs:
     Enter the goal x coordinate:300
     Enter the goal y coordinate: 230
     Enter the goal theta orientation: 30
-
+<p align="center">
 ![image](https://user-images.githubusercontent.com/36150235/226221895-8a29293c-3d1f-45f7-80d0-6db00250d0f7.png)
-
+</p>
 
 
